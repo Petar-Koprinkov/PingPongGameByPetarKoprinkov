@@ -2,43 +2,62 @@ import sys
 import random
 import pygame
 
+
+# Input player names and choose the level of the game
+player1_name = input("Enter name for Player 1: ")
+player2_name = input("Enter name for Player 2: ")
+level = input("Choose level for the game: \n-Easy \n-Medium \n-Hard \n")
+
+level_to_speed = {
+    "Easy": 5,
+    "Medium": 7,
+    "Hard": 9
+}
+
+# Set the default speed to 7
+ball_speed = level_to_speed.get(level, 7)
+
 pygame.init()
 
-WIDTH, HEIGHT = 600, 400
+WIDTH, HEIGHT = 900, 600
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-BALL_SPEED = 5
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Ping Pong by Petar Koprinkov")
-
-
-# Randomize the initial direction of the ball
-ball_x, ball_y = WIDTH // 2, HEIGHT // 2
-ball_speed_x, ball_speed_y = random.choice([-BALL_SPEED, BALL_SPEED]), random.choice([-BALL_SPEED, BALL_SPEED])
-
-
-paddle_width, paddle_height = 15, 60
+paddle_width, paddle_height = 15, 120
 left_paddle_x, right_paddle_x = 10, WIDTH - 25
 left_paddle_y, right_paddle_y = HEIGHT // 2 - paddle_height // 2, HEIGHT // 2 - paddle_height // 2
 paddle_speed = 7
 score_left, score_right = 0, 0
 
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Ping Pong by Petar Koprinkov")
+
+# Randomize the initial direction of the ball
+ball_x, ball_y = WIDTH // 2, HEIGHT // 2
+ball_speed_x, ball_speed_y = random.choice([-ball_speed, ball_speed]), random.choice([-ball_speed, ball_speed])
+
 # Font for displaying the score
 font = pygame.font.Font(None, 36)
+countdown_font = pygame.font.Font(None, 72)
 
-# Input player names
-player1_name = input("Enter name for Player 1: ")
-player2_name = input("Enter name for Player 2: ")
 
-# Wait 5 seconds before starting the game after players write their names
-start_time = pygame.time.get_ticks()
-while pygame.time.get_ticks() - start_time < 5000:
-    pass
+def display_countdown(number):
+    screen.fill(BLACK)
+    text = countdown_font.render(str(number), True, WHITE)
+    screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
+    pygame.display.flip()
+    pygame.time.delay(1000)
+
+
+# Countdown before game start
+for i in range(5, 0, -1):
+    display_countdown(i)
+display_countdown("Go!")
+pygame.time.delay(100)
 
 
 def reset_ball():
-    return WIDTH // 2, HEIGHT // 2, random.choice([-BALL_SPEED, BALL_SPEED]), random.choice([-BALL_SPEED, BALL_SPEED])
+    return WIDTH // 2, HEIGHT // 2, random.choice([-ball_speed, ball_speed]), random.choice([-ball_speed, ball_speed])
 
 
 # Game loop
@@ -79,7 +98,7 @@ while True:
     if ball_x <= 0:
         score_right += 1
         if score_right >= 10:
-            winner_text = font.render(f"{player2_name} Wins!", True, WHITE)
+            winner_text = font.render(f"{player2_name} Wins! :)", True, WHITE)
             screen.blit(winner_text,
                         (WIDTH // 2 - winner_text.get_width() // 2, HEIGHT // 2 - winner_text.get_height() // 2))
             pygame.display.flip()
@@ -109,5 +128,3 @@ while True:
 
     pygame.display.flip()
     pygame.time.Clock().tick(60)
-
-
